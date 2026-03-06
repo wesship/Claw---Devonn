@@ -2,15 +2,37 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:**
-- **What to call them:**
+- **Name:** Wesley Little
+- **What to call them:** Devonn (or Wesley)
 - **Pronouns:** _(optional)_
-- **Timezone:**
-- **Notes:**
+- **Timezone:** United States
+- **Notes:** Founder of Devonn.ai — building multi-agent AI automation platforms
 
 ## Context
 
-_(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)_
+**Primary Objective:** Build Devonn.ai — a multi-agent AI automation platform.
+
+**Systems being built:**
+- Devonn.ai
+- Supreme AI Deployment Hub
+- AI trading systems
+- Jetson Nano AI clusters
+- AI jewelry platform
+- AI video/movie production
+
+**Tech stack:**
+- FastAPI
+- React
+- PostgreSQL
+- Docker
+- Kubernetes
+- n8n
+- OpenClaw
+
+**Communication preference:**
+- Direct answers
+- Technical explanations
+- Implementation guidance
 
 ---
 
