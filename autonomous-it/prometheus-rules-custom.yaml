@@ -1,0 +1,93 @@
+# Custom Deployment-Specific Alert Rules
+# Copy this template for each service you want Autopilot to manage
+# Replace PLACEHOLDER values with your actual deployment names
+
+groups:
+  - name: devonn.autonomous_it.custom
+    rules:
+      # API Service - 5xx errors
+      - alert: HTTP5xxHigh_api
+        expr: |
+          sum(
+            rate(http_requests_total{
+              app="api",
+              status=~"5.."
+            }[5m])
+          ) > 5
+        for: 2m
+        labels:
+          severity: critical
+          namespace: default
+          deployment: api
+        annotations:
+          summary: "API service has high 5xx error rate"
+          runbook_url: "https://wiki.internal/runbooks/api-5xx"
+
+      # Frontend Service - latency
+      - alert: HTTPLatencyHigh_frontend
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{
+              app="frontend"
+            }[5m])) by (le)
+          ) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          namespace: default
+          deployment: frontend
+        annotations:
+          summary: "Frontend p95 latency above 500ms"
+
+      # Trading Webhook - availability
+      - alert: TradingWebhookDown
+        expr: |
+          up{job="trading-webhook"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          namespace: trading
+          deployment: trading-webhook
+        annotations:
+          summary: "Trading webhook is down"
+
+      # Database connection pool saturation
+      - alert: DBConnectionPoolSaturation
+        expr: |
+          (
+            pg_stat_activity_count{datname!=""} /
+            pg_settings_max_connections
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          namespace: database
+          deployment: postgres
+        annotations:
+          summary: "Database connection pool near capacity"
+
+      # Queue depth (if using message queues)
+      - alert: QueueDepthHigh
+        expr: |
+          rabbitmq_queue_messages{
+            queue=~"critical.*"
+          } > 10000
+        for: 5m
+        labels:
+          severity: warning
+          namespace: messaging
+          deployment: rabbitmq
+        annotations:
+          summary: "Critical queue depth exceeds threshold"
+
+      # Custom application metric example
+      - alert: PaymentProcessingLag
+        expr: |
+          time() - payment_last_processed_timestamp > 300
+        for: 2m
+        labels:
+          severity: critical
+          namespace: payments
+          deployment: payment-processor
+        annotations:
+          summary: "Payment processing has stalled"

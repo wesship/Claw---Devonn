@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devonn-autopilot-config
+  namespace: devonn-autopilot
+data:
+  AUTOPILOT_MODE: "mode1"  # mode0=observe, mode1=safe auto-remediate
+  ALLOW_AUTONOMOUS_ACTIONS: "restart,scale"
+  DEFAULT_NAMESPACE: "default"
+  SCALE_DELTA_DEFAULT: "2"
+  # Telegram
+  TELEGRAM_ENABLED: "true"
+  TELEGRAM_BOT_TOKEN: "CHANGE_ME"
+  TELEGRAM_CHAT_ID: "CHANGE_ME"

@@ -1,0 +1,12 @@
+receivers:
+  - name: devonn-autopilot
+    webhook_configs:
+      - url: http://devonn-autopilot.devonn-autopilot.svc.cluster.local:8000/webhook/alertmanager
+        send_resolved: true
+
+route:
+  receiver: default
+  routes:
+    - matchers:
+        - severity=~"warning|critical"
+      receiver: devonn-autopilot

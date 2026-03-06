@@ -1,0 +1,64 @@
+# Devonn Autopilot - Production Policy & Guardrails
+# This file defines safety boundaries for autonomous actions
+
+autopilot:
+  # Mode configuration
+  mode: mode1  # mode0=observe-only, mode1=safe-auto-remediate
+  
+  # Allowed autonomous actions (whitelist)
+  allowed_actions:
+    - restart_deployment
+    - scale_deployment
+  
+  # Explicitly denied actions (even in mode1)
+  denied_actions:
+    - delete_deployment
+    - delete_namespace
+    - modify_secrets
+    - modify_configmaps
+    - exec_into_pods
+    - port_forward
+  
+  # Rate limiting
+  rate_limits:
+    max_restarts_per_hour: 10
+    max_scales_per_hour: 20
+    cooldown_minutes: 5  # Between actions on same deployment
+  
+  # Namespace allowlist (empty = all allowed)
+  allowed_namespaces:
+    - default
+    - devonn
+    - staging
+  
+  # Deployment allowlist (empty = all allowed in namespaces)
+  # Use this to gradually roll out autopilot
+  allowed_deployments:
+    - api
+    - frontend
+    - worker
+  
+  # Scale limits
+  scaling:
+    max_replicas: 20
+    min_replicas: 1
+    max_delta: 5  # Maximum scale up/down per action
+  
+  # Notification settings
+  notifications:
+    telegram:
+      enabled: true
+      on_action: true
+      on_failure: true
+      on_cooldown_skip: false
+    
+  # Incident logging
+  incident_log:
+    retention_days: 90
+    max_entries: 10000
+    
+  # Integration with OpenClaw agents
+  openclaw:
+    enabled: true
+    agent_endpoint: http://devonn-autopilot.devonn-autopilot.svc.cluster.local:8000
+    workspace_path: /home/ubuntu/.openclaw/workspace/autonomous-it/incidents

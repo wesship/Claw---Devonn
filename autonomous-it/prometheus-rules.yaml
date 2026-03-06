@@ -1,0 +1,56 @@
+groups:
+  - name: devonn.autonomous_it
+    rules:
+      # 1) Pod crash looping
+      - alert: KubePodCrashLooping
+        expr: max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}[5m]) >= 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod is crash-looping (CrashLoopBackOff)"
+
+      # 2) OOM killed
+      - alert: KubePodOOMKilled
+        expr: increase(kube_pod_container_status_terminated_reason{reason="OOMKilled"}[10m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod container was OOMKilled"
+
+      # 3) Node memory pressure
+      - alert: NodeMemoryPressure
+        expr: kube_node_status_condition{condition="MemoryPressure", status="true"} == 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node is under MemoryPressure"
+
+      # 4) Node disk pressure
+      - alert: NodeDiskPressure
+        expr: kube_node_status_condition{condition="DiskPressure", status="true"} == 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node is under DiskPressure"
+
+      # 5) High 5xx error rate
+      - alert: HTTP5xxHigh
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) > 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate detected"
+
+      # 6) High latency P95
+      - alert: HTTPLatencyHighP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency above 1s"
